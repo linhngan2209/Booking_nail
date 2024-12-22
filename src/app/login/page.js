@@ -33,10 +33,14 @@ const Login = () => {
             });
 
             if (response.data) {
-                setMessage("Đăng nhập thành công!");
-                localStorage.setItem("user", JSON.stringify(response.data));
-
-                router.push(`/?path=DASHBOARD`);
+                const userRole = response.data.role;
+                if (userRole === "admin" || userRole === "manager") {
+                    setMessage("Login successfullu!");
+                    localStorage.setItem("user", JSON.stringify(response.data));
+                    router.push(`/?path=DASHBOARD`);
+                } else {
+                    setError("Login fail!.");
+                }
             }
         } catch (err) {
             if (err.response) {
