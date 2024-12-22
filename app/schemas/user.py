@@ -9,13 +9,14 @@ class UserCreate(BaseModel):
     password: str = Field(..., min_length=6)
     address: Optional[str] = Field(None, max_length=255)
     role: Optional[str] = Field("customer")
-    
+
     class Config:
         from_attributes = True
 
 class UserLogin(BaseModel):
     email: EmailStr
     password: str = Field(..., min_length=6)
+    role: Optional[str] = Field("customer")
 
 
 class UserUpdate(BaseModel):

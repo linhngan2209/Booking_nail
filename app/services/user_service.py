@@ -38,14 +38,14 @@ class UserService:
 
         return existing_user
 
-
+    
     def get_booking_by_user_id(self, user_id: int):
         bookings = (
             self.db.query(Booking.id, Booking.start_time, Booking.end_time, 
                           Booking.status, Booking.description, Booking.total_bill, 
                           Service.service_title.label("service_title"))
-            .join(Service, Service.id == Booking.service_id)  # Kết nối với bảng Service
-            .filter(Booking.customer_id == user_id)  # Lọc theo user_id
+            .join(Service, Service.id == Booking.service_id)  
+            .filter(Booking.customer_id == user_id)  
             .all()
         )
 

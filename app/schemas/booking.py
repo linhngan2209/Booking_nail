@@ -21,6 +21,7 @@ class BookingCreateUser(BaseModel):
     description: str
     total_bill: float
     start: str
+    
 class Config:
         from_attributes = True
 

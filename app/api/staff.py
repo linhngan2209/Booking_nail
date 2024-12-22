@@ -5,6 +5,7 @@ from typing import List
 from app.services.staff_service import StaffService
 from app.db.db import get_db
 from app.schemas.staff import StaffCreate, StaffResponse, StaffUpdate
+from app.helpers.authorization import role_required
 
 router = APIRouter()
 
@@ -21,12 +22,14 @@ def get_staff_detail(staff_id: int, db: Session = Depends(get_db)):
     return staff
 
 @router.post("/create-staff")
+@role_required("admin")
 def create_staff(new_staff: StaffCreate, db: Session = Depends(get_db)):
     staff_service = StaffService(db)
     res = staff_service.create_staff(new_staff)
     return res 
 
 @router.put("/update-staff/{staff_id}", response_model=StaffResponse)
+@role_required("admin")
 def update_staff(staff_id: int, staff: StaffUpdate, db: Session = Depends(get_db)):
     staff_service = StaffService(db)
     updated_staff = staff_service.update_staff(staff_id=staff_id, staff_data=staff)
@@ -34,6 +37,7 @@ def update_staff(staff_id: int, staff: StaffUpdate, db: Session = Depends(get_db
     return updated_staff
 
 @router.delete("/delete-staff/{staff_id}")
+@role_required("admin")
 def delete_staff(staff_id: int, db: Session = Depends(get_db)):
     staff_service = StaffService(db)
     staff_service.delete_staff(staff_id=staff_id)
