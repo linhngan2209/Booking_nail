@@ -82,6 +82,9 @@ const ManageService = () => {
                 toast.current.show({ severity: 'success', summary: 'Success', detail: 'Service saved successfully', life: 3000 });
                 fetchServices();
             }
+            if (response.status === 403) {
+                toast.current.show({ severity: 'error', summary: 'Error', detail: 'You do not have permission to access this resource.', life: 3000 });
+            }
         } catch (error) {
             toast.current.show({ severity: 'error', summary: 'Error', detail: 'There was an error saving the service', life: 3000 });
         } finally {
@@ -96,6 +99,9 @@ const ManageService = () => {
             if (res.data?.message === 'success') {
                 toast.current.show({ severity: 'success', summary: 'Success', detail: 'Service deleted successfully', life: 3000 });
                 setServices(services.filter((s) => s.id !== id));
+            }
+            if (response.status === 403) {
+                toast.current.show({ severity: 'error', summary: 'Error', detail: 'You do not have permission to access this resource.', life: 3000 });
             }
         } catch (err) {
             toast.current.show({ severity: 'error', summary: 'Error', detail: 'Failed to delete service', life: 3000 });

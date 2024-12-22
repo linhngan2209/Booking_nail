@@ -1,6 +1,6 @@
-'use client'; // Đánh dấu là Client Component
+'use client'; 
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import TimeTable from './dashboard/timetable/TimeTable';
 import ManageStaff from './dashboard/managestaff/ManageStaff';
@@ -14,16 +14,46 @@ import IcStaffSelect from '@/icon/staffSelect.svg';
 import IcTime from '@/icon/time.svg';
 import IcTimeSelect from '@/icon/timeSelect.svg';
 import IcLogout from '@/icon/logout.svg';
+import axios from "axios";
 
 const Dashboard = () => {
     const [currentTab, setCurrentTab] = useState('DASHBOARD');
     const [showSideBar, setShowSideBar] = useState(true);
+    const [isLoading, setIsLoading] = useState(true); 
     const router = useRouter();
+
+    useEffect(() => {
+        const checkAuth = async () => {
+            setIsLoading(true); 
+            const user = localStorage.getItem('user'); 
+            if (!user) {
+                router.push('/login'); 
+            } else {
+                setIsLoading(false); 
+            }
+        };
+
+        checkAuth();
+    }, [router]);
 
     const handleTabChange = (newTab) => {
         setCurrentTab(newTab);
         router.push(`?path=${newTab}`);
     };
+
+    const handleLogout =async () => {
+        localStorage.removeItem('user'); 
+        const response = await axios.get("http://localhost:8000/api/v1/logout")
+        router.push('/login');
+    };
+
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500 border-solid"></div>
+            </div>
+        );
+    }
 
     return (
         <div className="flex h-screen">
@@ -61,7 +91,7 @@ const Dashboard = () => {
                         </div>
                     </div>
 
-                    <div className="cursor-pointer">
+                    <div className="cursor-pointer" onClick={handleLogout}>
                         <IcLogout />
                     </div>
                 </div>

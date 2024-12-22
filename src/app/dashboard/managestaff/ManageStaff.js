@@ -71,6 +71,8 @@ export default function ManageStaff() {
                 resetModal();
                 toast.current.show({ severity: 'success', summary: 'Success', detail: 'Staff saved successfully', life: 3000 });
                 fetchStaff();
+            } else if (response.status === 403) {
+                toast.current.show({ severity: 'error', summary: 'Error', detail: 'You do not have permission to access this resource.', life: 3000 });
             }
         } catch (error) {
             toast.current.show({ severity: 'error', summary: 'Error', detail: 'There was an error saving the staff', life: 3000 });
@@ -86,6 +88,9 @@ export default function ManageStaff() {
             if (res.data?.message === 'success') {
                 toast.current.show({ severity: 'success', summary: 'Success', detail: 'Staff deleted successfully', life: 3000 });
                 setStaff(staff.filter((s) => s.id !== id));
+            }
+            if (response.status === 403) {
+                toast.current.show({ severity: 'error', summary: 'Error', detail: 'You do not have permission to access this resource.', life: 3000 });
             }
         } catch (err) {
             toast.current.show({ severity: 'error', summary: 'Error', detail: 'Failed to delete staff', life: 3000 });

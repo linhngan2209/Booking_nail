@@ -167,7 +167,6 @@ export default function TimeTableUI() {
             total_bill: newService.bill
         }
        
-        console.log(mapData)
         try {
             if (isEditing) {
                 const response = await axios.put(`http://localhost:8000/api/v1/update-booking/${editingService.id}`, mapData);
@@ -178,6 +177,9 @@ export default function TimeTableUI() {
                         );
                         return slot;
                     });
+                    if (response.status === 403) {
+                        toast.current.show({ severity: 'error', summary: 'Error', detail: 'You do not have permission to access this resource.', life: 3000 });
+                    }
                     setAppointments(updatedAppointments);
                     alert('Booking updated successfully!');
                 }
@@ -201,6 +203,9 @@ export default function TimeTableUI() {
     
                     setAppointments(updatedAppointments);
                     alert('Booking created successfully!');
+                }
+                if (response.status === 403) {
+                    toast.current.show({ severity: 'error', summary: 'Error', detail: 'You do not have permission to access this resource.', life: 3000 });
                 }
             }
     
