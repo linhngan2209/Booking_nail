@@ -5,7 +5,6 @@ from sqlalchemy.orm import Session
 from app.db.db import get_db
 from loguru import logger
 from app.helpers.authorization import role_required
-from app.helpers.authentication import get_current_user
 
 router = APIRouter()
 
@@ -16,7 +15,7 @@ def create_booking(booking: BookingCreate, db: Session = Depends(get_db)):
     return booking_service.create_booking(booking)
 
 @router.post("/create-booking-user/", response_model=BookingResponse)
-def create_booking_user(booking: BookingCreateUser,db: Session = Depends(get_db), current_user: dict = Depends(get_current_user) ):
+def create_booking_user(booking: BookingCreateUser,db: Session = Depends(get_db),  ):
     booking_service = BookingService(db)
     return booking_service.create_booking_user(booking)
 

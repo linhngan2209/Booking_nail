@@ -6,6 +6,8 @@ from app.api import staff
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
+from app.middleware.auth_middleware import AuthMiddleware
+
 app = FastAPI()
 
 app.add_middleware(
@@ -17,6 +19,7 @@ app.add_middleware(
 )
 Base.metadata.create_all(engine)
 app.add_middleware(SessionMiddleware, secret_key="ropeksjkjfkdsjfktfg544_f5j4")
+app.add_middleware(AuthMiddleware)
 app.include_router(category.router, prefix="/api/v1")
 app.include_router(service.router, prefix="/api/v1")
 app.include_router(staff.router, prefix="/api/v1")

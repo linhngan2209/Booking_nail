@@ -6,13 +6,12 @@ from app.services.staff_service import StaffService
 from app.db.db import get_db
 from app.schemas.staff import StaffCreate, StaffResponse, StaffUpdate
 from app.helpers.authorization import role_required
-from app.helpers.authentication import get_current_user
 
 
 router = APIRouter()
 
 @router.get("/list-staff", response_model=List[StaffResponse])
-def get_list_staff(db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+def get_list_staff(db: Session = Depends(get_db), ):
     staff_service = StaffService(db)
     staff_list = staff_service.get_list_staff()
     return staff_list

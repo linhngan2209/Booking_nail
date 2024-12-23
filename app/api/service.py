@@ -17,12 +17,12 @@ def create_service(service: ServiceCreate, db: Session = Depends(get_db)):
     return service_service.create_service(service)
 
 @router.get("/list-services/")
-def get_list_service(db: Session = Depends(get_db),  current_user: dict = Depends(get_current_user)):
+def get_list_service(db: Session = Depends(get_db),  ):
     service_service = ServiceService(db)
     return service_service.get_list_services()
 
 @router.get("/service/{service_id}", response_model=ServiceResponse)
-def get_service(service_id: int, db: Session = Depends(get_db),  current_user: dict = Depends(get_current_user)):
+def get_service(service_id: int, db: Session = Depends(get_db),  ):
     service_service = ServiceService(db)
     return service_service.get_service_by_id(service_id)
 
