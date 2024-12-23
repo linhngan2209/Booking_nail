@@ -5,7 +5,6 @@ from sqlalchemy.orm import Session
 from app.db.db import get_db
 from loguru import logger
 from app.helpers.authorization import role_required
-from app.helpers.authentication import get_current_user
 
 
 router = APIRouter()

@@ -5,7 +5,6 @@ from app.services.category_service import CategoryService
 from app.schemas.category import CategoryCreate, CategoryUpdate, CategoryInDB
 from app.db.db import get_db
 from app.helpers.authorization import role_required
-from app.helpers.authentication import get_current_user
 
 
 router = APIRouter()
