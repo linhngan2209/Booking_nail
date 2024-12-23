@@ -31,13 +31,15 @@ class UserService:
     def login_user(self, user: UserLogin):
         existing_user = self.db.query(User).filter(User.email == user.email).first()
         if not existing_user:
-            raise HTTPException(status_code=400, detail='Invalid')
-        
+            raise HTTPException(status_code=404, detail="Account not found")
+
         if not verify_password(user.password, existing_user.password):
-            raise HTTPException(status_code=400, detail='Invalid')
-        expires_delta = timedelta(hours=1) 
+            raise HTTPException(status_code=401, detail="Incorrect password")
+
+        expires_delta = timedelta(hours=1)
         token_data = {"user_id": existing_user.id, "email": existing_user.email}
         token = create_token(token_data, expires_delta)
+
         response_data = {
             "access_token": token,
             "user": {
@@ -45,7 +47,8 @@ class UserService:
                 "email": existing_user.email,
                 "name": existing_user.full_name,
                 "role": existing_user.role
-                }
+            },
+            "message": "Successful"
         }
         return response_data
 

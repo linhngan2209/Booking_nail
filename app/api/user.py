@@ -1,11 +1,10 @@
 from email import message
-from venv import logger
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from sqlalchemy.orm import Session
 from app.services.user_service import UserService
 from app.db.db import get_db
 from app.schemas.user import UserCreate, UserLogin, UserResponse
-
+from loguru import logger
 router = APIRouter()
 
 
@@ -19,7 +18,7 @@ def create_user(new_user: UserCreate, db: Session = Depends(get_db)):
 def login(user: UserLogin, request: Request, db: Session = Depends(get_db)):
     user_service = UserService(db)
     res = user_service.login_user(user)
-    logger.warning(f'{res}')
+    logger.info(res)
     if res:
         ser_info = res["user"]
         request.session['role'] = ser_info["role"]
