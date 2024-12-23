@@ -35,8 +35,19 @@ class UserService:
         
         if not verify_password(user.password, existing_user.password):
             raise HTTPException(status_code=400, detail='Invalid')
-
-        return existing_user
+        expires_delta = timedelta(hours=1) 
+        token_data = {"user_id": existing_user.id, "email": existing_user.email}
+        token = create_token(token_data, expires_delta)
+        response_data = {
+            "access_token": token,
+            "user": {
+                "user_id": existing_user.id,
+                "email": existing_user.email,
+                "name": existing_user.full_name,
+                "role": existing_user.role
+                }
+        }
+        return response_data
 
     
     def get_booking_by_user_id(self, user_id: int):

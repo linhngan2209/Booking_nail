@@ -7,7 +7,6 @@ class UserCreate(BaseModel):
     email: EmailStr
     phone_number: str = Field(..., max_length=15)
     password: str = Field(..., min_length=6)
-    address: Optional[str] = Field(None, max_length=255)
     role: Optional[str] = Field("customer")
 
     class Config:
@@ -24,7 +23,6 @@ class UserUpdate(BaseModel):
     email: Optional[EmailStr] = None
     phone_number: Optional[str] = Field(None, max_length=15)
     password: Optional[str] = Field(None, min_length=6)
-    address: Optional[str] = Field(None, max_length=255)
     role: Optional[str] = Field(None)
 
 class UserResponse(BaseModel):
@@ -32,7 +30,6 @@ class UserResponse(BaseModel):
     full_name: str
     email: EmailStr
     phone_number: str
-    address: Optional[str]
     role: str
     created_at: datetime
     updated_at: datetime

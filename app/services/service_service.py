@@ -15,13 +15,17 @@ class ServiceService:
             existing_service = self.db.query(Service).filter(Service.service_title == service.service_title).first()
             if existing_service:
                 raise HTTPException(status_code=400, detail="Service already exists")
-            
-            new_service = Service(**service.model_dump())  
+
+            new_service = Service(
+                service_title=service.service_title,
+                service_price=service.service_price,
+                service_image=service.service_image,
+                category_id=service.category_id 
+            )
             logger.info(f"Created new service: {new_service}")
             self.db.add(new_service)
             self.db.commit()
             self.db.refresh(new_service)
-            
             return new_service
         except IntegrityError as e:
             self.db.rollback()
@@ -36,7 +40,6 @@ class ServiceService:
         return service
 
     def get_list_services(self) -> List[Service]:
-
         service_list = self.db.query(Service).all()
         total_count = self.db.query(Service).count()
         return {

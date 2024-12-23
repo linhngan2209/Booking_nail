@@ -21,7 +21,8 @@ def login(user: UserLogin, request: Request, db: Session = Depends(get_db)):
     res = user_service.login_user(user)
     logger.warning(f'{res}')
     if res:
-        request.session['role'] = res.role
+        ser_info = res["user"]
+        request.session['role'] = ser_info["role"]
     return res
 
 @router.get("/user/{user_id}")

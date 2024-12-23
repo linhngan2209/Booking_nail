@@ -12,7 +12,6 @@ class User(Base):
     email = Column(String(100), unique=True, nullable=False)
     phone_number = Column(String(15), unique=True, nullable=False)
     password = Column(String(255), nullable=False)
-    address = Column(String(255), nullable=True)
     role = Column(Enum("customer","admin", "manager" ,name="user_roles"), default="customer")
     created_at = Column(TIMESTAMP, server_default=func.current_timestamp())
     updated_at = Column(TIMESTAMP, server_default=func.current_timestamp(), onupdate=func.current_timestamp())
