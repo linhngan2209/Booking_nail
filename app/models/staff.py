@@ -5,8 +5,6 @@ from sqlalchemy import func
 from app.db.base import Base
 from app.models.staff_service_association import staff_service_association
 
-
-
 class Staff(Base):
     __tablename__ = "staffs"
 

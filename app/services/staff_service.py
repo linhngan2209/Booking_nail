@@ -48,7 +48,6 @@ class StaffService:
             logger.warning(f"Staff with id {staff_id} not found")
             raise HTTPException(status_code=404, detail="Staff not found")
 
-        # Cập nhật các trường nếu có giá trị mới
         for field, value in staff_data.dict(exclude_unset=True).items():
             setattr(db_staff, field, value)
         

@@ -70,7 +70,7 @@ class CategoryService:
             ]
             result.append({
                 "id": category.id,
-                "name": category.name,
+                "name": category.category_name,
                 "description": category.description,
                 "services": services,
             })
