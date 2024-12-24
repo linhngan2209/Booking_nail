@@ -18,13 +18,15 @@ def create_user(new_user: UserCreate, db: Session = Depends(get_db)):
 def login(user: UserLogin, request: Request, db: Session = Depends(get_db)):
     user_service = UserService(db)
     res = user_service.login_user(user)
-    logger.info(res)
+
+    if isinstance(res, Response):
+        return res  
     if res:
-        ser_info = res["user"]
+        ser_info = res["user"]  
         request.session['role'] = ser_info["role"]
     return res
 
-@router.get("/user/{user_id}")
+@router.get("/user-tracking/{user_id}")
 def get_user_tracking(user_id: int, db: Session = Depends(get_db)):
     user_service = UserService(db)
     res = user_service.get_booking_by_user_id(user_id)

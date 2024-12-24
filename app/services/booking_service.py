@@ -1,4 +1,4 @@
-from fastapi import HTTPException
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from app.models.booking import Booking
 from app.schemas.booking import BookingCreate, BookingCreateUser, BookingUpdate, BookingResponse
@@ -19,9 +19,8 @@ class BookingService:
         booking = self.db.query(Booking).filter(Booking.id == booking_id).first()
         if not booking:
             logger.warning(f"Booking with id {booking_id} not found")
-            raise HTTPException(status_code=404, detail="Booking not found")
-        return BookingResponse.from_orm(booking)
-
+            return JSONResponse(status_code=404, content={"detail": "Booking not found"})
+        return booking
 
     def get_list_bookings(self) -> dict:
         bookings = self.db.query(Booking).join(User).join(Service).join(Staff).all()
@@ -46,19 +45,19 @@ class BookingService:
 
         return booking_responses
 
-    
     def create_booking(self, booking_data: BookingCreate) -> BookingResponse:
         service = self.db.query(Service).filter(Service.service_title == booking_data.service).first()
         if not service:
-            raise HTTPException(status_code=404, detail=f"Service '{booking_data['service']}' not found")
+            return JSONResponse(status_code=404, content={"detail": f"Service '{booking_data['service']}' not found"})
 
         user = self.db.query(User).filter(User.full_name == booking_data.customer).first()
         if not user:
-            raise HTTPException(status_code=404, detail=f"User '{booking_data['customer']}' not found")
+            return JSONResponse(status_code=404, content={"detail": f"User '{booking_data['customer']}' not found"})
 
         staff = self.db.query(Staff).filter(Staff.staff_name == booking_data.staff).first()
         if not staff:
-            raise HTTPException(status_code=404, detail=f"Staff '{booking_data['staff']}' not found")
+            return JSONResponse(status_code=404, content={"detail": f"Staff '{booking_data['staff']}' not found"})
+
         start_time = datetime.strptime(booking_data.start, '%d/%m/%Y').strftime('%Y-%m-%d')
         mapped_data = {
             "customer_id": user.id, 
@@ -83,7 +82,7 @@ class BookingService:
 
         if overlapping_booking:
             logger.warning(f"Staff with id {mapped_data['staff_id']} already has a booking at this time")
-            raise HTTPException(status_code=400, detail="Staff is already booked at this time")
+            return JSONResponse(status_code=400, content={"detail": "Staff is already booked at this time"})
 
         db_booking = Booking(**mapped_data)
         self.db.add(db_booking)
@@ -91,7 +90,7 @@ class BookingService:
         self.db.refresh(db_booking)
         logger.info(f"Created booking with id {db_booking.id}")
         return db_booking
-    
+
     def create_booking_user(self, booking_data: BookingCreateUser) -> BookingResponse:
         start_time = datetime.strptime(booking_data.start, '%I:%M %d/%m/%Y').strftime('%Y-%m-%d %H:%M:%S')
         mapped_data = {
@@ -114,9 +113,10 @@ class BookingService:
             )
             .first()
         )
+
         if overlapping_booking:
             logger.warning(f"Staff with id {mapped_data['staff_id']} already has a booking at this time")
-            raise HTTPException(status_code=400, detail="Staff is already booked at this time")
+            return JSONResponse(status_code=400, content={"detail": "Staff is already booked at this time"})
 
         db_booking = Booking(**mapped_data)
         self.db.add(db_booking)
@@ -129,7 +129,7 @@ class BookingService:
         db_booking = self.db.query(Booking).filter(Booking.id == booking_id).first()
         if not db_booking:
             logger.warning(f"Booking with id {booking_id} not found")
-            raise HTTPException(status_code=404, detail="Booking not found")
+            return JSONResponse(status_code=404, content={"detail": "Booking not found"})
 
         for field, value in booking_data.dict(exclude_unset=True).items():
             setattr(db_booking, field, value)
@@ -137,13 +137,13 @@ class BookingService:
         self.db.commit()
         self.db.refresh(db_booking)
         logger.info(f"Updated booking {booking_id}")
-        return BookingResponse.from_orm(db_booking)
+        return db_booking
 
     def delete_booking(self, booking_id: int) -> None:
         db_booking = self.db.query(Booking).filter(Booking.id == booking_id).first()
         if not db_booking:
             logger.warning(f"Booking with id {booking_id} not found")
-            raise HTTPException(status_code=404, detail="Booking not found")
+            return JSONResponse(status_code=404, content={"detail": "Booking not found"})
 
         self.db.delete(db_booking)
         self.db.commit()

@@ -34,7 +34,6 @@ def create_staff(new_staff: StaffCreate, db: Session = Depends(get_db)):
 def update_staff(staff_id: int, staff: StaffUpdate, db: Session = Depends(get_db)):
     staff_service = StaffService(db)
     updated_staff = staff_service.update_staff(staff_id=staff_id, staff_data=staff)
-    logger.info(f"Updated staff with id {staff_id}.")
     return updated_staff
 
 @router.delete("/delete-staff/{staff_id}")

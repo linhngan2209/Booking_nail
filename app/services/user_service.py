@@ -1,5 +1,5 @@
 from datetime import timedelta
-from fastapi import HTTPException, Response
+from fastapi import Response
 from sqlalchemy.orm import Session
 from app.core.jwt_token import create_token
 from app.models.user import User
@@ -14,10 +14,10 @@ class UserService:
         self.db = db
 
     def create_user(self, user_data: UserCreate) -> UserResponse:
-        
         existing_user = self.db.query(User).filter(User.email == user_data.email).first()
         if existing_user:
-            raise Exception("Email already exists")
+            logger.error(f"Email {user_data.email} already exists")
+            return Response(content="Email already exists", status_code=400)
         
         hashed_password = hash_password(user_data.password)
         user_data_dict = user_data.model_dump()
@@ -26,15 +26,18 @@ class UserService:
         self.db.add(new_user)
         self.db.commit()
         self.db.refresh(new_user)
+        logger.info(f"Created new user: {new_user.email}")
         return {"message": 'success'}
 
     def login_user(self, user: UserLogin):
         existing_user = self.db.query(User).filter(User.email == user.email).first()
         if not existing_user:
-            raise HTTPException(status_code=404, detail="Account not found")
+            logger.error(f"Account with email {user.email} not found")
+            return Response(content="Account not found", status_code=404)
 
         if not verify_password(user.password, existing_user.password):
-            raise HTTPException(status_code=401, detail="Incorrect password")
+            logger.error(f"Incorrect password for email {user.email}")
+            return Response(content="Incorrect password", status_code=401)
 
         expires_delta = timedelta(hours=1)
         token_data = {"user_id": existing_user.id, "email": existing_user.email}
@@ -50,9 +53,9 @@ class UserService:
             },
             "message": "Successful"
         }
+        logger.info(f"User {user.email} logged in successfully")
         return response_data
 
-    
     def get_booking_by_user_id(self, user_id: int):
         bookings = (
             self.db.query(Booking.id, Booking.start_time, Booking.end_time, 
@@ -62,6 +65,10 @@ class UserService:
             .filter(Booking.customer_id == user_id)  
             .all()
         )
+
+        if not bookings:
+            logger.warning(f"No bookings found for user with ID {user_id}")
+            return Response(content="No bookings found", status_code=404)
 
         booking_data = [
             {
@@ -75,5 +82,5 @@ class UserService:
             }
             for booking in bookings
         ]
-
+        logger.info(f"Retrieved {len(booking_data)} bookings for user with ID {user_id}")
         return booking_data
